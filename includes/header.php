@@ -165,10 +165,10 @@ if ($u) {
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-lg-3 me-auto my-2 my-lg-0">
           <li class="nav-item"><a class="nav-link" href="/adoption.php">Adopt</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/vets.php">Vets</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/catalog.php">Products</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/about.php">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/contact.php">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="/vets.php">Vets</a></li>
+          <li class="nav-item"><a class="nav-link" href="/catalog.php">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about.php">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact.php">Contact</a></li>
         </ul>
 
         <form action="<?php echo BASE; ?>/search.php" method="get" class="d-lg-none mb-2" role="search">
@@ -193,7 +193,7 @@ if ($u) {
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?php echo (int)$cartCount; ?></span>
               <?php endif; ?>
             </a>
-            <a href="</login.php" class="btn btn-outline-primary">Login</a>
+            <a href="/login.php" class="btn btn-outline-primary">Login</a>
             <a href="/register.php" class="btn btn-accent">Register</a>
             <a href="/register-vet.php" class="btn btn-primary">Register as Vet</a>
             <a href="/register-shelter.php" class="btn btn-outline-primary">Register Shelter</a>
