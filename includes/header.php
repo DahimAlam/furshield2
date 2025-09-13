@@ -193,7 +193,7 @@ if ($u) {
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?php echo (int)$cartCount; ?></span>
               <?php endif; ?>
             </a>
-            <a href="<?php echo BASE; ?>/login.php" class="btn btn-outline-primary">Login</a>
+            <a href="login.php" class="btn btn-outline-primary">Login</a>
             <a href="<?php echo BASE; ?>/register.php" class="btn btn-accent">Register</a>
             <a href="<?php echo BASE; ?>/register-vet.php" class="btn btn-primary">Register as Vet</a>
             <a href="<?php echo BASE; ?>/register-shelter.php" class="btn btn-outline-primary">Register Shelter</a>
