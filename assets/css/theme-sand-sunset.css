@@ -1,0 +1,58 @@
+:root{
+  --primary:#F59E0B;
+  --accent:#EF4444;
+  --bg:#FFF7ED;
+  --text:#1F2937;
+  --card:#FFFFFF;
+  --radius:18px;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+html,body{height:100%}
+body.bg-app{background:var(--bg);color:var(--text);font-family:Poppins,system-ui,sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6,p{font-family:Montserrat,Poppins,sans-serif}
+a{text-decoration:none}
+
+
+#loader {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loader-circle {
+  width: 70px;
+  height: 70px;
+  border: 6px solid rgba(0,0,0,0.1);
+  border-top: 6px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: var(--shadow);
+}
+
+.loader-text {
+  margin-top: 18px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: Montserrat, sans-serif;
+  letter-spacing: 1px;
+}
+
+#loader.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Animation */
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
