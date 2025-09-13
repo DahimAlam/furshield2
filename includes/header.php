@@ -164,7 +164,7 @@ if ($u) {
 
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-lg-3 me-auto my-2 my-lg-0">
-          <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/adoption.php">Adopt</a></li>
+          <li class="nav-item"><a class="nav-link" href="/adoption.php">Adopt</a></li>
           <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/vets.php">Vets</a></li>
           <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/catalog.php">Products</a></li>
           <li class="nav-item"><a class="nav-link" href="<?php echo BASE; ?>/about.php">About</a></li>
