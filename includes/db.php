@@ -4,14 +4,19 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 // BASE sirf ek dafa hi define hoga
 if (!defined('BASE')) define('BASE', '/furshield');
 
-$DB_HOST = '127.0.0.1';
+$DB_HOST = 'mysql.railway.internal';
 $DB_USER = 'root';
-$DB_PASS = '';
-$DB_NAME = 'furshield';
+$DB_PASS = 'XsILAIaogMiurbBLrWdfTKqEZnhzrTFR ';
+$DB_NAME = 'railway';
+$port       = "3306";
 
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-$conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-$conn->set_charset('utf8mb4');
+$conn = new mysqli($servername, $username, $password, $dbname, $port);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+$conn->set_charset("utf8mb4");
+?>
 
 // CSRF token
 if (empty($_SESSION['csrf_token'])) {
