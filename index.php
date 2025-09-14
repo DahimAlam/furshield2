@@ -264,7 +264,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
       <h2 class="h6 mb-3"><?php echo $t[$lang]['city_h']; ?></h2>
       <div class="d-flex flex-wrap gap-2">
         <?php foreach ($cities as $c) { ?>
-          <a class="btn btn-sm btn-outline-primary" href="<?php echo BASE.'/adopt.php?city='.urlencode($c['city']); ?>"><?php echo htmlspecialchars($c['city']); ?></a>
+          <a class="btn btn-sm btn-outline-primary" href="<?php echo'/adopt.php?city='.urlencode($c['city']); ?>"><?php echo htmlspecialchars($c['city']); ?></a>
         <?php } ?>
       </div>
     </div>
