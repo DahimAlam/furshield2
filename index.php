@@ -54,14 +54,16 @@ function hascol($c,$t,$col){
   $q=$c->query("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='{$t}' AND COLUMN_NAME='{$col}'");
   return $q && $q->num_rows>0;
 }
+
 function media($rel,$folder){
-  $rel=trim((string)$rel);
-  if($rel==='') return BASE.'/assets/placeholder/blank.jpg';
+  $rel = trim((string)$rel);
+  if($rel==='') return '/assets/placeholder/blank.jpg'; // no BASE needed
   if (strpos($rel,'http://')===0 || strpos($rel,'https://')===0) return $rel;
-  if ($rel[0]==='/') return $rel;
-  if (strpos($rel,'uploads/')===0) return BASE.'/'.ltrim($rel,'/');
-  return BASE.'/uploads/'.$folder.'/'.$rel;
+  if ($rel[0]=='/') return $rel;  // no need for BASE, already absolute path
+  if (strpos($rel,'uploads/')===0) return '/'.ltrim($rel,'/');  // no BASE
+  return '/uploads/'.$folder.'/'.$rel; // no BASE
 }
+
 function table_exists($c,$t){
   $t=$c->real_escape_string($t);
   $r=$c->query("SELECT 1 FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='{$t}'");
@@ -71,11 +73,11 @@ function table_exists($c,$t){
 $settings = table_exists($conn,'homepage_settings') ? rowx($conn,"SELECT * FROM homepage_settings WHERE id=1") : [];
 $hero_title = $settings['hero_title'] ?? "Your pet’s health, organized & care made simple.";
 $hero_sub   = $settings['hero_subtitle'] ?? "Owners, Vets & Shelters: appointments, health records, adoption, and curated products.";
-$hero_img   = $settings['hero_image'] ?? BASE."/assets/img/hero-sand.jpg";
+$hero_img   = $settings['hero_image'] ?? "/uploads/pets/premium_photo-1668114375111-e90b5e975df6.avif"; // no BASE
 $c1t        = $settings['cta_primary_text'] ?? $t[$lang]['find_vet'];
-$c1u        = $settings['cta_primary_url'] ?? BASE."/vets.php";
+$c1u        = $settings['cta_primary_url'] ?? "/vets.php"; // no BASE
 $c2t        = $settings['cta_secondary_text'] ?? $t[$lang]['adopt_pet'];
-$c2u        = $settings['cta_secondary_url'] ?? BASE."/adopt.php";
+$c2u        = $settings['cta_secondary_url'] ?? "/adopt.php"; // no BASE
 $prod_mode  = $settings['products_mode'] ?? 'latest';
 
 $counts = [
@@ -144,8 +146,8 @@ $events=rows($conn,"SELECT id,".(hascol($conn,'events','title')?'title':'name AS
 
 $cities=rows($conn,"SELECT DISTINCT city FROM shelters WHERE city IS NOT NULL AND city<>'' ORDER BY city LIMIT 8");
 ?>
-<?php include __DIR__ . '/includes/header.php'; ?>
 
+<?php include __DIR__ . '/includes/header.php'; ?>
 <style>
 :root{--primary:#F59E0B;--accent:#EF4444;--bg:#FFF7ED;--text:#1F2937;--card:#FFFFFF;--radius:20px;--shadow:0 12px 34px rgba(0,0,0,.08);--page-pad:clamp(12px,2.4vw,32px)}
 .container,.container-sm,.container-md,.container-lg,.container-xl,.container-xxl,.container-fluid{max-width:100%!important;padding-left:var(--page-pad);padding-right:var(--page-pad)}
@@ -221,7 +223,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
           </div>
         </div>
         <div class="col-lg-5">
-          <?php $hero_img = !empty($settings['hero_image']) ? BASE.$settings['hero_image'] :'/uploads/pets/premium_photo-1668114375111-e90b5e975df6.avif'; ?>
+          <?php $hero_img = !empty($settings['hero_image']) ? $settings['hero_image'] :'/uploads/pets/premium_photo-1668114375111-e90b5e975df6.avif'; ?>
           <div class="card border-0 shadow" style="border-radius:var(--radius); overflow:hidden">
             <img src="<?php echo htmlspecialchars($hero_img); ?>" alt="FurShield Hero" style="object-fit:cover;height:360px;width:100%">
             <div class="card-body">
@@ -238,7 +240,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
       <div class="urgent d-flex align-items-center gap-3 p-3 mt-4">
         <i class="bi bi-exclamation-octagon text-danger fs-5"></i>
         <div class="d-flex flex-wrap gap-3 small">
-          <?php foreach($urgent as $u){ echo '<a class="link-dark fw-semibold" href="'.BASE.'/pet.php?id='.$u['id'].'">'.htmlspecialchars($u['name']).'</a>'; } ?>
+          <?php foreach($urgent as $u){ echo '<a class="link-dark fw-semibold" href="/pet.php?id='.$u['id'].'">'.htmlspecialchars($u['name']).'</a>'; } ?>
         </div>
       </div>
       <?php } ?>
@@ -275,7 +277,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h4 m-0"><?php echo $t[$lang]['adoption_h']; ?></h2>
-        <a class="btn btn-sm btn-outline-primary" href="<?php echo BASE.'/adoption.php'; ?>"><?php echo $t[$lang]['view_all']; ?></a>
+        <a class="btn btn-sm btn-outline-primary" href="<?php echo '/adoption.php'; ?>"><?php echo $t[$lang]['view_all']; ?></a>
       </div>
       <div class="row g-4 row-cols-2 row-cols-md-3 row-cols-lg-4">
         <?php foreach ($pets as $p): ?>
@@ -325,9 +327,9 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
                 <div class="fw-semibold text-truncate" title="<?php echo htmlspecialchars($pr['name']); ?>"><?php echo htmlspecialchars($pr['name']); ?></div>
                 <div class="text-muted mb-3">$<?php echo number_format((float)$pr['price'],2); ?></div>
                 <div class="mt-auto d-flex gap-2">
-                  <a href="<?php echo BASE.'/product-details.php?id='.(int)$pr['id']; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
-                  <a href="<?php echo BASE.'/actions/cart-add.php?id='.(int)$pr['id']; ?>" class="btn btn-sm btn-primary flex-grow-1">Add to Cart</a>
-                  <a href="<?php echo BASE.'/actions/wishlist-add.php?id='.(int)$pr['id']; ?>" class="btn btn-sm btn-outline-danger" title="Add to Wishlist"><i class="bi bi-heart"></i></a>
+                  <a href="<?php echo'/product-details.php?id='.(int)$pr['id']; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
+                  <a href="<?php echo '/actions/cart-add.php?id='.(int)$pr['id']; ?>" class="btn btn-sm btn-primary flex-grow-1">Add to Cart</a>
+                  <a href="<?php echo '/actions/wishlist-add.php?id='.(int)$pr['id']; ?>" class="btn btn-sm btn-outline-danger" title="Add to Wishlist"><i class="bi bi-heart"></i></a>
                 </div>
               </div>
             </div>
@@ -344,7 +346,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
         <?php foreach ($blogs as $b): ?>
           <div class="col">
             <div class="card blog-card h-100 reveal">
-              <img src="<?php echo htmlspecialchars(!empty($b['image']) ? BASE.$b['image'] : BASE.'/assets/placeholder/blog.jpg'); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($b['title']); ?>">
+              <img src="<?php echo htmlspecialchars(!empty($b['image']) ? $b['image'] : '/assets/placeholder/blog.jpg'); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($b['title']); ?>">
               <div class="card-body">
                 <div class="title mb-1 text-truncate"><?php echo htmlspecialchars($b['title']); ?></div>
                 <div class="small text-muted"><?php echo date('M d, Y', strtotime($b['created_at'])); ?></div>
@@ -377,7 +379,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
         <?php foreach ($events as $e) { ?>
           <div class="col">
             <div class="card event-card h-100 reveal">
-              <img src="<?php echo htmlspecialchars(!empty($e['image']) ? BASE.$e['image'] : BASE.'/assets/placeholder/event.jpg'); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($e['title']); ?>">
+              <img src="<?php echo htmlspecialchars(!empty($e['image']) ? $e['image'] :'/assets/placeholder/event.jpg'); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($e['title']); ?>">
               <div class="card-body">
                 <h6 class="fw-semibold mb-1 text-truncate"><?php echo htmlspecialchars($e['title']); ?></h6>
                 <small class="text-muted nowrap"><?php echo date('M d, Y', strtotime($e['date'])); ?><?php if ($e['city']) echo ' • '.htmlspecialchars($e['city']); ?></small>
@@ -400,7 +402,7 @@ h1,h2,h3,h4{font-family:Montserrat,Poppins,sans-serif}
           <div class="col">
             <div class="card testi-card h-100 reveal p-3">
               <div class="d-flex align-items-center mb-2">
-                <?php $avatar = !empty($ts['avatar']) ? BASE.$ts['avatar'] : BASE.'/assets/placeholder/avatar.png'; ?>
+                <?php $avatar = !empty($ts['avatar']) ? $ts['avatar'] :'/assets/placeholder/avatar.png'; ?>
                 <img src="<?php echo htmlspecialchars($avatar); ?>" class="rounded-circle me-2" width="40" height="40" alt="">
                 <div>
                   <strong class="d-block text-truncate" style="max-width:180px"><?php echo htmlspecialchars($ts['name']); ?></strong>
