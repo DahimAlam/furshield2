@@ -1,48 +1,52 @@
 <?php
-if (session_status()===PHP_SESSION_NONE) session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/includes/db.php';
-if (!defined('BASE')) define('BASE','/furshield');
+if (!defined('BASE')) define('BASE', '/furshield');
 $conn->set_charset('utf8mb4');
 
 if (!function_exists('col_exists')) {
   function col_exists(mysqli $c, string $t, string $col): bool {
     $t = $c->real_escape_string($t); $col = $c->real_escape_string($col);
     $r = $c->query("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='{$t}' AND COLUMN_NAME='{$col}'");
-    return $r && $r->num_rows>0;
-  }
-}
-if (!function_exists('pickcol')) {
-  function pickcol(mysqli $c, string $t, array $cands): ?string {
-    foreach($cands as $x){ if(col_exists($c,$t,$x)) return $x; }
-    return null;
-  }
-}
-if (!function_exists('media')) {
-  function media($rel, $folder){
-    if(!$rel) return BASE.'/assets/placeholder/product.jpg';
-    $rel = trim((string)$rel);
-    if (str_starts_with($rel,'http://') || str_starts_with($rel,'https://')) return $rel;
-    if ($rel[0]==='/') return $rel;
-    if (str_starts_with($rel,'uploads/')) return BASE.'/'.ltrim($rel,'/');
-    return BASE.'/uploads/'.$folder.'/'.$rel;
+    return $r && $r->num_rows > 0;
   }
 }
 
-$t='products';
-$C_ID   = pickcol($conn,$t,['id','product_id']);
-$C_NAME = pickcol($conn,$t,['name','title']);
-$C_PRICE= pickcol($conn,$t,['price','amount','unit_price']);
-$C_SALE = pickcol($conn,$t,['sale_price','discount_price','price_sale']);
-$C_IMG  = pickcol($conn,$t,['image_path','image','cover','thumb']);
-$C_IMG2 = pickcol($conn,$t,['hover_image','image_hover','image2','image_alt']);
-$C_CAT  = pickcol($conn,$t,['category','cat','type','collection']);
-$C_BR   = pickcol($conn,$t,['brand','manufacturer']);
-$C_DESC = pickcol($conn,$t,['short_desc','description','details','detail']);
-$C_ACT  = pickcol($conn,$t,['is_active','active','visible','enabled']);
-$C_FEAT = pickcol($conn,$t,['featured','is_featured']);
-$C_NEW  = pickcol($conn,$t,['created_at','created','added_at','createdon','created_on']);
-$C_STK  = pickcol($conn,$t,['stock','qty','quantity','in_stock']);
-$C_POP  = pickcol($conn,$t,['views','sold','orders']); 
+if (!function_exists('pickcol')) {
+  function pickcol(mysqli $c, string $t, array $cands): ?string {
+    foreach ($cands as $x) {
+      if (col_exists($c, $t, $x)) return $x;
+    }
+    return null;
+  }
+}
+
+if (!function_exists('media')) {
+  function media($rel, $folder) {
+    if (!$rel) return '/assets/placeholder/product.jpg'; // Removed BASE URL
+    $rel = trim((string)$rel);
+    if (str_starts_with($rel, 'http://') || str_starts_with($rel, 'https://')) return $rel;
+    if ($rel[0] === '/') return $rel;
+    if (str_starts_with($rel, 'uploads/')) return '/' . ltrim($rel, '/'); // Removed BASE URL
+    return '/uploads/' . $folder . '/' . $rel; // Removed BASE URL
+  }
+}
+
+$t = 'products';
+$C_ID   = pickcol($conn, $t, ['id', 'product_id']);
+$C_NAME = pickcol($conn, $t, ['name', 'title']);
+$C_PRICE= pickcol($conn, $t, ['price', 'amount', 'unit_price']);
+$C_SALE = pickcol($conn, $t, ['sale_price', 'discount_price', 'price_sale']);
+$C_IMG  = pickcol($conn, $t, ['image_path', 'image', 'cover', 'thumb']);
+$C_IMG2 = pickcol($conn, $t, ['hover_image', 'image_hover', 'image2', 'image_alt']);
+$C_CAT  = pickcol($conn, $t, ['category', 'cat', 'type', 'collection']);
+$C_BR   = pickcol($conn, $t, ['brand', 'manufacturer']);
+$C_DESC = pickcol($conn, $t, ['short_desc', 'description', 'details', 'detail']);
+$C_ACT  = pickcol($conn, $t, ['is_active', 'active', 'visible', 'enabled']);
+$C_FEAT = pickcol($conn, $t, ['featured', 'is_featured']);
+$C_NEW  = pickcol($conn, $t, ['created_at', 'created', 'added_at', 'createdon', 'created_on']);
+$C_STK  = pickcol($conn, $t, ['stock', 'qty', 'quantity', 'in_stock']);
+$C_POP  = pickcol($conn, $t, ['views', 'sold', 'orders']);
 
 $q      = trim($_GET['q'] ?? '');
 $cat    = trim($_GET['category'] ?? '');
@@ -305,9 +309,9 @@ include __DIR__ . '/includes/header.php';
                     <?php } ?>
                   </div>
                   <div class="mt-auto card-actions d-flex align-items-center gap-2">
-                    <a href="<?php echo BASE.'/product-details.php?id='.$pid; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
-                    <a href="<?php echo BASE.'/actions/cart-add.php?id='.$pid; ?>" class="btn btn-sm btn-primary flex-grow-1" style="background:var(--primary);border:none" <?php echo $instk?'':'aria-disabled="true" tabindex="-1" class="btn btn-sm btn-secondary disabled"'; ?>>Add to Cart</a>
-                    <a href="<?php echo BASE.'/actions/wishlist-add.php?id='.$pid; ?>" class="btn btn-sm btn-outline-danger" title="Wishlist"><i class="bi bi-heart"></i></a>
+                    <a href="<?php echo '/product-details.php?id='.$pid; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
+                    <a href="<?php echo '/actions/cart-add.php?id='.$pid; ?>" class="btn btn-sm btn-primary flex-grow-1" style="background:var(--primary);border:none" <?php echo $instk?'':'aria-disabled="true" tabindex="-1" class="btn btn-sm btn-secondary disabled"'; ?>>Add to Cart</a>
+                    <a href="<?php echo '/actions/wishlist-add.php?id='.$pid; ?>" class="btn btn-sm btn-outline-danger" title="Wishlist"><i class="bi bi-heart"></i></a>
                   </div>
                 </div>
               </div>
