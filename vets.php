@@ -1,7 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/includes/db.php';
-if (!defined('BASE')) define('BASE', '/furshield');
 
 function e($s)
 {
@@ -67,7 +66,7 @@ if (isset($_GET['ajax'])) {
   while ($r = $res->fetch_assoc()): ?>
     <div class="col-md-6 col-lg-4">
       <div class="card border-0 h-100" style="border-radius:var(--radius);box-shadow:var(--shadow)">
-        <img src="<?php echo e(!empty($r['profile_image']) ? BASE . '/' . $r['profile_image'] : BASE . '/assets/placeholder/vet.jpg'); ?>"
+        <img src="<?php echo e(!empty($r['profile_image']) ? '/' . $r['profile_image'] : '/assets/placeholder/vet.jpg'); ?>"
           class="card-img-top" style="height:180px;object-fit:cover;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius)">
         <div class="card-body">
           <h5 class="fw-bold mb-1"><?php echo e($r['name']); ?></h5>
@@ -78,7 +77,7 @@ if (isset($_GET['ajax'])) {
               <i class="bi <?php echo $i <= ($r['rating'] ?? 0) ? 'bi-star-fill text-warning' : 'bi-star'; ?>"></i>
             <?php endfor; ?>
           </div>
-          <a href="<?php echo BASE . '/vet-profile.php?id=' . $r['id']; ?>" class="btn btn-sm text-white" style="background:var(--primary);border-radius:12px">View Profile</a>
+          <a href="/vet-profile.php?id=<?php echo $r['id']; ?>" class="btn btn-sm text-white" style="background:var(--primary);border-radius:12px">View Profile</a>
         </div>
       </div>
     </div>
@@ -204,6 +203,33 @@ if (isset($_GET['ajax'])) {
 
   #searchSuggest li:hover {
     background: var(--bg)
+  }
+
+  /* Add any additional CSS to enhance your website's look */
+  .bg-app {
+    background-color: #f4f4f9;
+  }
+
+  .card {
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-img-top {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+
+  .form-control {
+    border-radius: 15px;
+  }
+
+  .btn {
+    border-radius: 12px;
+  }
+
+  .list-group-item {
+    cursor: pointer;
   }
 </style>
 
