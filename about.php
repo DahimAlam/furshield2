@@ -1,7 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/includes/db.php';
-if (!defined('BASE')) define('BASE', '/furshield');
 $conn->set_charset('utf8mb4');
 
 /* ---------- helpers (guard against re-declare) ---------- */
@@ -35,11 +34,11 @@ if (!function_exists('media')) {
   function media($rel, $folder)
   {
     $rel = trim((string)$rel);
-    if ($rel === '') return BASE . '/assets/placeholder/blank.jpg';
+    if ($rel === '') return '/assets/placeholder/blank.jpg';
     if (str_starts_with($rel, 'http://') || str_starts_with($rel, 'https://')) return $rel;
     if ($rel[0] === '/') return $rel;
-    if (str_starts_with($rel, 'uploads/')) return BASE . '/' . ltrim($rel, '/');
-    return BASE . '/uploads/' . $folder . '/' . $rel;
+    if (str_starts_with($rel, 'uploads/')) return '/' . ltrim($rel, '/');
+    return '/uploads/' . $folder . '/' . $rel;
   }
 }
 function h($s)
@@ -311,6 +310,8 @@ include __DIR__ . '/includes/header.php';
     transition: 420ms cubic-bezier(.2, .7, .2, 1)
   }
 </style>
+
+
 <div id="fsLoader" class="fs-loader is-hidden" aria-live="polite" aria-busy="true">
   <div class="fs-bar" id="fsLoaderBar"></div>
   <div class="fs-card">
@@ -333,13 +334,13 @@ include __DIR__ . '/includes/header.php';
           <h1 class="display-6 fw-bold mt-2">We’re building the easiest way to care for pets—together.</h1>
           <p class="lead text-secondary">FurShield connects owners, vets and shelters with health records, appointments, adoption and trusted products in one place.</p>
           <div class="d-flex gap-2 flex-wrap mt-2">
-            <a href="<?php echo BASE . '/adopt.php'; ?>" class="btn btn-primary btn-pill" style="background:var(--primary);border:none">Adopt a Pet</a>
-            <a href="<?php echo BASE . '/vets.php'; ?>" class="btn btn-outline-dark btn-pill">Find a Vet</a>
+            <a href="<?php echo '/adopt.php'; ?>" class="btn btn-primary btn-pill" style="background:var(--primary);border:none">Adopt a Pet</a>
+            <a href="<?php echo '/vets.php'; ?>" class="btn btn-outline-dark btn-pill">Find a Vet</a>
           </div>
         </div>
         <div class="col-lg-5">
           <div class="hero-card">
-            <img src="<?php echo BASE . '/assets/placeholder/hero-about.jpg'; ?>" alt="FurShield" loading="lazy">
+            <img src="<?php echo '/assets/placeholder/hero-about.jpg'; ?>" alt="FurShield" loading="lazy">
             <div class="p-3 small text-muted d-flex justify-content-between">
               <div><?php echo number_format($counts['vets']); ?> Verified Vets</div>
               <div><?php echo number_format($counts['shel']); ?> Active Shelters</div>
@@ -561,8 +562,8 @@ include __DIR__ . '/includes/header.php';
           <p class="mb-0">Are you a vet or shelter? Create your profile and start helping pets today.</p>
         </div>
         <div class="d-flex gap-2">
-          <a href="<?php echo BASE . '/register-vet.php'; ?>" class="btn btn-light btn-pill">Register as Vet</a>
-          <a href="<?php echo BASE . '/register-shelter.php'; ?>" class="btn btn-outline-light btn-pill">Register as Shelter</a>
+          <a href="<?php echo '/register-vet.php'; ?>" class="btn btn-light btn-pill">Register as Vet</a>
+          <a href="<?php echo  '/register-shelter.php'; ?>" class="btn btn-outline-light btn-pill">Register as Shelter</a>
         </div>
       </div>
     </div>
