@@ -304,9 +304,9 @@ include __DIR__ . '/includes/header.php';
                     <?php } ?>
                   </div>
                   <div class="mt-auto card-actions d-flex align-items-center gap-2">
-                    <a href="<?php echo BASE.'/product-details.php?id='.$pid; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
-                    <a href="<?php echo BASE.'/actions/cart-add.php?id='.$pid; ?>" class="btn btn-sm btn-primary flex-grow-1" style="background:var(--primary);border:none" <?php echo $instk?'':'aria-disabled="true" tabindex="-1" class="btn btn-sm btn-secondary disabled"'; ?>>Add to Cart</a>
-                    <a href="<?php echo BASE.'/actions/wishlist-add.php?id='.$pid; ?>" class="btn btn-sm btn-outline-danger" title="Wishlist"><i class="bi bi-heart"></i></a>
+                    <a href="<?php echo '/product-details.php?id='.$pid; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
+                    <a href="<?php echo'/actions/cart-add.php?id='.$pid; ?>" class="btn btn-sm btn-primary flex-grow-1" style="background:var(--primary);border:none" <?php echo $instk?'':'aria-disabled="true" tabindex="-1" class="btn btn-sm btn-secondary disabled"'; ?>>Add to Cart</a>
+                    <a href="<?php echo '/actions/wishlist-add.php?id='.$pid; ?>" class="btn btn-sm btn-outline-danger" title="Wishlist"><i class="bi bi-heart"></i></a>
                   </div>
                 </div>
               </div>
