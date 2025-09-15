@@ -1,49 +1,48 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
+if (session_status()===PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/includes/db.php';
+if (!defined('BASE')) define('BASE','/furshield');
 $conn->set_charset('utf8mb4');
 
 if (!function_exists('col_exists')) {
   function col_exists(mysqli $c, string $t, string $col): bool {
     $t = $c->real_escape_string($t); $col = $c->real_escape_string($col);
     $r = $c->query("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='{$t}' AND COLUMN_NAME='{$col}'");
-    return $r && $r->num_rows > 0;
+    return $r && $r->num_rows>0;
   }
 }
-
 if (!function_exists('pickcol')) {
   function pickcol(mysqli $c, string $t, array $cands): ?string {
-    foreach ($cands as $x) { if (col_exists($c, $t, $x)) return $x; }
+    foreach($cands as $x){ if(col_exists($c,$t,$x)) return $x; }
     return null;
   }
 }
-
 if (!function_exists('media')) {
-  function media($rel, $folder) {
-    if (!$rel) return '/assets/placeholder/product.jpg';
+  function media($rel, $folder){
+    if(!$rel) return BASE.'/assets/placeholder/product.jpg';
     $rel = trim((string)$rel);
-    if (str_starts_with($rel, 'http://') || str_starts_with($rel, 'https://')) return $rel;
-    if ($rel[0] === '/') return $rel;
-    if (str_starts_with($rel, 'uploads/')) return '/' . ltrim($rel, '/');
-    return '/uploads/' . $folder . '/' . $rel;
+    if (str_starts_with($rel,'http://') || str_starts_with($rel,'https://')) return $rel;
+    if ($rel[0]==='/') return $rel;
+    if (str_starts_with($rel,'uploads/')) return BASE.'/'.ltrim($rel,'/');
+    return BASE.'/uploads/'.$folder.'/'.$rel;
   }
 }
 
-$t = 'products';
-$C_ID   = pickcol($conn, $t, ['id', 'product_id']);
-$C_NAME = pickcol($conn, $t, ['name', 'title']);
-$C_PRICE = pickcol($conn, $t, ['price', 'amount', 'unit_price']);
-$C_SALE = pickcol($conn, $t, ['sale_price', 'discount_price', 'price_sale']);
-$C_IMG  = pickcol($conn, $t, ['image_path', 'image', 'cover', 'thumb']);
-$C_IMG2 = pickcol($conn, $t, ['hover_image', 'image_hover', 'image2', 'image_alt']);
-$C_CAT  = pickcol($conn, $t, ['category', 'cat', 'type', 'collection']);
-$C_BR   = pickcol($conn, $t, ['brand', 'manufacturer']);
-$C_DESC = pickcol($conn, $t, ['short_desc', 'description', 'details', 'detail']);
-$C_ACT  = pickcol($conn, $t, ['is_active', 'active', 'visible', 'enabled']);
-$C_FEAT = pickcol($conn, $t, ['featured', 'is_featured']);
-$C_NEW  = pickcol($conn, $t, ['created_at', 'created', 'added_at', 'createdon', 'created_on']);
-$C_STK  = pickcol($conn, $t, ['stock', 'qty', 'quantity', 'in_stock']);
-$C_POP  = pickcol($conn, $t, ['views', 'sold', 'orders']); 
+$t='products';
+$C_ID   = pickcol($conn,$t,['id','product_id']);
+$C_NAME = pickcol($conn,$t,['name','title']);
+$C_PRICE= pickcol($conn,$t,['price','amount','unit_price']);
+$C_SALE = pickcol($conn,$t,['sale_price','discount_price','price_sale']);
+$C_IMG  = pickcol($conn,$t,['image_path','image','cover','thumb']);
+$C_IMG2 = pickcol($conn,$t,['hover_image','image_hover','image2','image_alt']);
+$C_CAT  = pickcol($conn,$t,['category','cat','type','collection']);
+$C_BR   = pickcol($conn,$t,['brand','manufacturer']);
+$C_DESC = pickcol($conn,$t,['short_desc','description','details','detail']);
+$C_ACT  = pickcol($conn,$t,['is_active','active','visible','enabled']);
+$C_FEAT = pickcol($conn,$t,['featured','is_featured']);
+$C_NEW  = pickcol($conn,$t,['created_at','created','added_at','createdon','created_on']);
+$C_STK  = pickcol($conn,$t,['stock','qty','quantity','in_stock']);
+$C_POP  = pickcol($conn,$t,['views','sold','orders']); 
 
 $q      = trim($_GET['q'] ?? '');
 $cat    = trim($_GET['category'] ?? '');
@@ -55,30 +54,30 @@ $pp     = 20;
 $off    = ($page-1)*$pp;
 
 $w = []; $types=''; $vals=[];
-if ($C_ACT) { $w[] = "`$C_ACT` = 1"; }
+if ($C_ACT) { $w[]="`$C_ACT`=1"; }
 if ($q !== '') {
   $like = '%'.$q.'%';
-  $parts = [];
-  if ($C_NAME) $parts[] = "`$C_NAME` LIKE ?";
-  if ($C_DESC) $parts[] = "`$C_DESC` LIKE ?";
-  if ($C_BR)   $parts[] = "`$C_BR` LIKE ?";
-  if ($C_CAT)  $parts[] = "`$C_CAT` LIKE ?";
+  $parts=[];
+  if ($C_NAME) $parts[]="`$C_NAME` LIKE ?";
+  if ($C_DESC) $parts[]="`$C_DESC` LIKE ?";
+  if ($C_BR)   $parts[]="`$C_BR` LIKE ?";
+  if ($C_CAT)  $parts[]="`$C_CAT` LIKE ?";
   if ($parts){
-    $w[] = '('.implode(' OR ', $parts).')';
+    $w[]='('.implode(' OR ',$parts).')';
     $rep = count($parts);
-    $types .= str_repeat('s', $rep);
-    for ($i = 0; $i < $rep; $i++) $vals[] = $like;
+    $types.=str_repeat('s',$rep);
+    for($i=0;$i<$rep;$i++) $vals[]=$like;
   }
 }
-if ($cat !== '' && $C_CAT) {
-  $w[] = "`$C_CAT` = ?";
-  $types .= 's'; $vals[] = $cat;
+if ($cat !== '' && $C_CAT){
+  $w[]="`$C_CAT`=?";
+  $types.='s'; $vals[]=$cat;
 }
-if ($C_PRICE) {
-  if ($minp !== '' && is_numeric($minp)) { $w[] = "`$C_PRICE` >= ?"; $types .= 'd'; $vals[] = (float)$minp; }
-  if ($maxp !== '' && is_numeric($maxp)) { $w[] = "`$C_PRICE` <= ?"; $types .= 'd'; $vals[] = (float)$maxp; }
+if ($C_PRICE){
+  if ($minp !== '' && is_numeric($minp)){ $w[]="`$C_PRICE`>=?"; $types.='d'; $vals[]=(float)$minp; }
+  if ($maxp !== '' && is_numeric($maxp)){ $w[]="`$C_PRICE`<=?"; $types.='d'; $vals[]=(float)$maxp; }
 }
-$where = $w ? ('WHERE '.implode(' AND ', $w)) : '';
+$where = $w ? ('WHERE '.implode(' AND ',$w)) : '';
 
 /* ---------- sort ---------- */
 $ob = '';
@@ -93,29 +92,29 @@ switch ($sort) {
 /* ---------- count ---------- */
 $sqlCount = "SELECT COUNT(*) c FROM `$t` $where";
 $stc = $conn->prepare($sqlCount);
-if ($types) $stc->bind_param($types, ...$vals);
-$stc->execute(); $res = $stc->get_result(); $total = (int)($res->fetch_assoc()['c'] ?? 0); $stc->close();
-$pages = max(1, (int)ceil($total / $pp));
+if($types) $stc->bind_param($types, ...$vals);
+$stc->execute(); $res=$stc->get_result(); $total = (int)($res->fetch_assoc()['c'] ?? 0); $stc->close();
+$pages = max(1, (int)ceil($total/$pp));
 
 /* ---------- fetch ---------- */
 $select = [];
 $select[] = $C_ID ? "`$C_ID` AS id" : "id";
 $select[] = $C_NAME ? "`$C_NAME` AS name" : "name";
-$select[] = $C_PRICE ? "`$C_PRICE` AS price" : "NULL AS price";
+$select[] = $C_PRICE? "`$C_PRICE` AS price" : "NULL AS price";
 if ($C_SALE) $select[] = "`$C_SALE` AS sale_price";
-$select[] = $C_IMG ? "`$C_IMG` AS image" : "'' AS image";
+$select[] = $C_IMG  ? "`$C_IMG` AS image" : "'' AS image";
 $select[] = $C_IMG2 ? "`$C_IMG2` AS hover_image" : "'' AS hover_image";
-if ($C_CAT)  $select[] = "`$C_CAT` AS category";
-if ($C_BR)   $select[] = "`$C_BR` AS brand";
-if ($C_DESC) $select[] = "`$C_DESC` AS description";
-if ($C_FEAT) $select[] = "`$C_FEAT` AS featured";
-if ($C_STK)  $select[] = "`$C_STK` AS stock";
-if ($C_NEW)  $select[] = "`$C_NEW` AS created_at";
+if ($C_CAT)  $select[]="`$C_CAT` AS category";
+if ($C_BR)   $select[]="`$C_BR` AS brand";
+if ($C_DESC) $select[]="`$C_DESC` AS description";
+if ($C_FEAT) $select[]="`$C_FEAT` AS featured";
+if ($C_STK)  $select[]="`$C_STK` AS stock";
+if ($C_NEW)  $select[]="`$C_NEW` AS created_at";
 
-$sql = "SELECT ".implode(', ', $select)." FROM `$t` $where $ob LIMIT ? OFFSET ?";
+$sql = "SELECT ".implode(', ',$select)." FROM `$t` $where $ob LIMIT ? OFFSET ?";
 $st = $conn->prepare($sql);
-if ($types) {
-  $types2 = $types . 'ii'; $vals2 = $vals; $vals2[] = $pp; $vals2[] = $off;
+if ($types){
+  $types2 = $types.'ii'; $vals2 = $vals; $vals2[] = $pp; $vals2[] = $off;
   $st->bind_param($types2, ...$vals2);
 } else {
   $st->bind_param('ii', $pp, $off);
@@ -124,23 +123,22 @@ $st->execute(); $items = $st->get_result()->fetch_all(MYSQLI_ASSOC); $st->close(
 
 /* ---------- categories for filter ---------- */
 $cats = [];
-if ($C_CAT) {
-  $rs = $conn->query("SELECT DISTINCT `$C_CAT` AS c FROM `$t` ".($C_ACT ? "WHERE `$C_ACT` = 1 " : "")."ORDER BY c");
-  if ($rs) { while ($r = $rs->fetch_assoc()) { if ($r['c'] !== '') $cats[] = $r['c']; } }
+if ($C_CAT){
+  $rs = $conn->query("SELECT DISTINCT `$C_CAT` AS c FROM `$t` ".($C_ACT? "WHERE `$C_ACT`=1 " : "")."ORDER BY c");
+  if($rs){ while($r=$rs->fetch_assoc()){ if($r['c']!=='') $cats[]=$r['c']; } }
 }
 
 /* ---------- small helpers ---------- */
-function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-$mk = function(array $patch) {
+function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+$mk = function(array $patch){
   $q = array_merge($_GET, $patch);
-  foreach ($q as $k => $v) { if ($v === null || $v === '') unset($q[$k]); }
-  $uri = strtok($_SERVER['REQUEST_URI'], '?');
-  return $uri . (count($q) ? ('?' . http_build_query($q)) : '');
+  foreach($q as $k=>$v){ if($v===null || $v==='') unset($q[$k]); }
+  $uri = strtok($_SERVER['REQUEST_URI'],'?');
+  return $uri.(count($q)?('?'.http_build_query($q)):'');
 };
 
 include __DIR__ . '/includes/header.php';
 ?>
-
 <style>
 :root{
   --primary:#F59E0B; --accent:#EF4444; --bg:#FFF7ED; --text:#1F2937; --card:#fff;
@@ -186,7 +184,6 @@ include __DIR__ . '/includes/header.php';
 .pagination .page-link{ border-radius:10px; border:1px solid #eee }
 .pagination .page-item.active .page-link{ background:var(--primary); border-color:var(--primary); color:#111 }
 </style>
-
 <div id="fsLoader" class="fs-loader is-hidden" aria-live="polite" aria-busy="true">
   <div class="fs-bar" id="fsLoaderBar"></div>
   <div class="fs-card">
@@ -307,9 +304,9 @@ include __DIR__ . '/includes/header.php';
                     <?php } ?>
                   </div>
                   <div class="mt-auto card-actions d-flex align-items-center gap-2">
-                    <a href="/product-details.php?id=<?php echo $pid; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
-                    <a href="/actions/cart-add.php?id=<?php echo $pid; ?>" class="btn btn-sm btn-primary flex-grow-1" style="background:var(--primary);border:none" <?php echo $instk?'':'aria-disabled="true" tabindex="-1" class="btn btn-sm btn-secondary disabled"'; ?>>Add to Cart</a>
-                    <a href="/actions/wishlist-add.php?id=<?php echo $pid; ?>" class="btn btn-sm btn-outline-danger" title="Wishlist"><i class="bi bi-heart"></i></a>
+                    <a href="<?php echo BASE.'/product-details.php?id='.$pid; ?>" class="btn btn-sm btn-outline-secondary flex-grow-1">View</a>
+                    <a href="<?php echo BASE.'/actions/cart-add.php?id='.$pid; ?>" class="btn btn-sm btn-primary flex-grow-1" style="background:var(--primary);border:none" <?php echo $instk?'':'aria-disabled="true" tabindex="-1" class="btn btn-sm btn-secondary disabled"'; ?>>Add to Cart</a>
+                    <a href="<?php echo BASE.'/actions/wishlist-add.php?id='.$pid; ?>" class="btn btn-sm btn-outline-danger" title="Wishlist"><i class="bi bi-heart"></i></a>
                   </div>
                 </div>
               </div>
